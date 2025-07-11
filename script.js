@@ -2403,3 +2403,96 @@ const clearOnFocusIfAdding = (e) => {
 if(materialInput) materialInput.addEventListener('focus', clearOnFocusIfAdding);
 if(pickupLocationInput) pickupLocationInput.addEventListener('focus', clearOnFocusIfAdding);
 if(dropoffLocationInput) dropoffLocationInput.addEventListener('focus', clearOnFocusIfAdding);
+
+
+
+function renderMissionsByType(missions) {
+  const container = document.getElementById('missions-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const types = ['Local', 'Planetario', 'Sistema'];
+  types.forEach(type => {
+    const filtered = missions.filter(m => m.type === type);
+    if (filtered.length > 0) {
+      const card = document.createElement('div');
+      card.className = 'card mb-3';
+      const header = document.createElement('div');
+      header.className = 'card-header fw-bold text-uppercase';
+      header.textContent = type;
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      filtered.forEach(m => {
+        const mDiv = document.createElement('div');
+        mDiv.className = 'mb-3 border-bottom pb-2';
+        mDiv.innerHTML = `<strong>${m.name}</strong> (ID: ${m.id})<br>
+        Estado: <span class="badge bg-secondary">${m.status || 'Desconocido'}</span>`;
+        body.appendChild(mDiv);
+      });
+      card.appendChild(header);
+      card.appendChild(body);
+      container.appendChild(card);
+    }
+  });
+}
+
+function renderMissionsByPickup(missions) {
+  const container = document.getElementById('missions-by-pickup');
+  if (!container) return;
+  container.innerHTML = '';
+  const pickupMap = {};
+  missions.forEach(m => {
+    m.cargos.forEach(c => {
+      if (!pickupMap[c.pickupLocation]) pickupMap[c.pickupLocation] = [];
+      pickupMap[c.pickupLocation].push({ m, c });
+    });
+  });
+  for (const location in pickupMap) {
+    const card = document.createElement('div');
+    card.className = 'card mb-3';
+    card.innerHTML = `<div class="card-header">${location}</div>`;
+    const body = document.createElement('div');
+    body.className = 'card-body';
+    pickupMap[location].forEach(({ m, c }) => {
+      const mat = document.createElement('div');
+      mat.innerHTML = `<strong>${c.material}</strong> de <em>${m.name}</em>`;
+      body.appendChild(mat);
+    });
+    card.appendChild(body);
+    container.appendChild(card);
+  }
+}
+
+function renderMissionsByDropoff(missions) {
+  const container = document.getElementById('missions-by-dropoff');
+  if (!container) return;
+  container.innerHTML = '';
+  const dropoffMap = {};
+  missions.forEach(m => {
+    m.cargos.forEach(c => {
+      if (!dropoffMap[c.dropoffLocation]) dropoffMap[c.dropoffLocation] = [];
+      dropoffMap[c.dropoffLocation].push({ m, c });
+    });
+  });
+  for (const location in dropoffMap) {
+    const card = document.createElement('div');
+    card.className = 'card mb-3';
+    card.innerHTML = `<div class="card-header">${location}</div>`;
+    const body = document.createElement('div');
+    body.className = 'card-body';
+    dropoffMap[location].forEach(({ m, c }) => {
+      const mat = document.createElement('div');
+      mat.innerHTML = `<strong>${c.material}</strong> de <em>${m.name}</em>`;
+      body.appendChild(mat);
+    });
+    card.appendChild(body);
+    container.appendChild(card);
+  }
+}
+
+// Llamada automática si existen misiones
+document.addEventListener('DOMContentLoaded', () => {
+  const missions = JSON.parse(localStorage.getItem('missions') || '[]');
+  renderMissionsByType(missions);
+  renderMissionsByPickup(missions);
+  renderMissionsByDropoff(missions);
+});
