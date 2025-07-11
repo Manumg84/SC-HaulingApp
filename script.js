@@ -7,40 +7,6 @@ function uuidv4() {
   });
 }
 
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const soundBuffers = {};
-
-async function loadSound(url, name) {
-    try {
-        const response = await fetch(url);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        soundBuffers[name] = audioBuffer;
-    } catch (error) {
-        console.error(`Error loading sound ${name} from ${url}:`, error);
-    }
-}
-
-function playSound(name) {
-    if (audioContext.state === 'suspended') {
-        audioContext.resume();
-    }
-    const buffer = soundBuffers[name];
-    if (buffer) {
-        const source = audioContext.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioContext.destination);
-        source.start(0);
-    } else {
-        console.warn(`Sound '${name}' not loaded.`);
-    }
-}
-
-loadSound('ui_confirm.mp3', 'confirm');
-loadSound('ui_delete.mp3', 'delete');
-loadSound('ui_load.mp3', 'load');
-loadSound('ui_deliver.mp3', 'deliver');
-
 async function cargarListasDesdeJson() {
   try {
     const response = await fetch('https://manumg84.github.io/SC-CargoOrganizer/data.json'); 
