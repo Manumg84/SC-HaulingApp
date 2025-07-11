@@ -2496,3 +2496,72 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMissionsByPickup(missions);
   renderMissionsByDropoff(missions);
 });
+
+
+
+function renderMissionsByTypeRedesign(missions) {
+  const container = document.getElementById('missions-by-type');
+  if (!container) return;
+  container.innerHTML = '';
+  const types = ['Local', 'Planetario', 'Sistema'];
+  types.forEach(type => {
+    const filtered = missions.filter(m => m.type === type);
+    if (filtered.length === 0) return;
+
+    const typeCard = document.createElement('div');
+    typeCard.className = 'card mb-4 shadow';
+    typeCard.innerHTML = `<div class="card-header fw-bold text-uppercase">${type}</div>`;
+    const typeBody = document.createElement('div');
+    typeBody.className = 'card-body';
+
+    filtered.forEach(m => {
+      const allDelivered = m.cargos.every(c => c.status === 'delivered');
+      const missionDiv = document.createElement('div');
+      missionDiv.className = 'card mb-3 border';
+
+      const missionHeader = document.createElement('div');
+      missionHeader.className = 'card-header d-flex justify-content-between align-items-center';
+      missionHeader.innerHTML = `
+        <div>
+          <strong>${m.name}</strong> <small class="text-muted">ID: ${m.id}</small><br>
+          Estado: <span class="badge ${allDelivered ? 'bg-success' : 'bg-warning'}">${allDelivered ? 'Entregada' : 'En reparto'}</span>
+        </div>
+        ${allDelivered ? `<button class="btn btn-sm btn-outline-success" onclick="markMissionDelivered(${m.id})">Marcar como entregada</button>` : ''}
+      `;
+
+      const missionBody = document.createElement('div');
+      missionBody.className = 'card-body';
+      m.cargos.forEach(c => {
+        const matDiv = document.createElement('div');
+        matDiv.className = 'mb-2';
+        matDiv.innerHTML = `
+          <div><strong>${c.material}</strong> | <small>${c.pickupLocation} ➜ ${c.dropoffLocation}</small></div>
+          <div><span class="badge bg-secondary">${c.totalScu} SCU</span> | Estado: <span class="badge ${c.status === 'delivered' ? 'bg-success' : 'bg-warning'}">${c.status}</span></div>
+        `;
+        missionBody.appendChild(matDiv);
+      });
+
+      missionDiv.appendChild(missionHeader);
+      missionDiv.appendChild(missionBody);
+      typeBody.appendChild(missionDiv);
+    });
+
+    typeCard.appendChild(typeBody);
+    container.appendChild(typeCard);
+  });
+}
+
+function markMissionDelivered(id) {
+  const missions = JSON.parse(localStorage.getItem('missions') || '[]');
+  const updated = missions.map(m => {
+    if (m.id === id) m.status = 'Entregada';
+    return m;
+  });
+  localStorage.setItem('missions', JSON.stringify(updated));
+  renderMissionsByTypeRedesign(updated);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const missions = JSON.parse(localStorage.getItem('missions') || '[]');
+  renderMissionsByTypeRedesign(missions);
+});
