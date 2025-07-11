@@ -1,44 +1,35 @@
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SC Hauling App</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="text-center">
-    <img src="communityimage.png" alt="Star Citizen Community Logo" class="header-logo"/>
-    <h1>SC CARGO ORGANIZER</h1>
-  </header>
-
-  <main>
-    <section id="missions-container">
-      <div class="mission-type-card">
-        <h3>Misiones Locales</h3>
-        <div class="mission-card">
-          <div class="mission-header">
-            <span class="mission-name">Reabastecimiento Area 18</span>
-            <span class="mission-id">ID: L-0092</span>
-            <span class="badge bg-warning">Pendiente de carga</span>
-            <button class="btn btn-success btn-sm">Marcar como entregada</button>
-          </div>
-          <div class="mission-materials">
-            <ul>
-              <li>Agua (10 SCU) - Origen: Bajini Point / Entrega: Area 18</li>
-              <li>Comida (6 SCU) - Origen: Bajini Point / Entrega: Area 18</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="custom-footer">
-    <img src="footer.png" alt="Footer gráfico" class="footer-image" style="width: 100%; height: auto; display: block; max-width: 1292px; margin: 0 auto;">
-  </footer>
-
-  <script type="module" src="script.js"></script>
-</body>
-</html>
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background-color: #101010;
+  color: #eee;
+}
+.header-logo {
+  max-width: 240px;
+  margin: 1rem auto;
+  display: block;
+}
+main {
+  padding: 2rem;
+}
+.mission-type-card {
+  background-color: #1c1c1c;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.mission-materials ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+footer {
+  margin-top: 2rem;
+}
