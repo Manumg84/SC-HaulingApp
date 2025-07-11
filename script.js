@@ -1248,7 +1248,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTable();
     isNewMissionCreation = true; 
     showAddMaterialForm(newMission.id, newMission.name);
-    playSound('confirm');
   });
   
   const updateContainerValidationMessage = (targetScu) => {
