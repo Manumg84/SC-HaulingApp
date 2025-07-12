@@ -7,7 +7,6 @@ const totalScuInput = document.getElementById('totalScu');
 const resetScuInputsBtn = document.getElementById('reset-scu-inputs');
 
 function updateContainerValidationMessage(totalScu) {
-  // Calcula el total de SCU seleccionados y actualiza el mensaje
   let assigned = 0;
   document.querySelectorAll('.scu-count').forEach(span => {
     const count = parseInt(span.textContent, 10);
@@ -30,7 +29,7 @@ function updateContainerValidationMessage(totalScu) {
   }
 }
 
-// Al hacer click en cualquier botón de breakdown (+)
+// EVENTO PARA BOTONES +
 containerBreakdownSection.addEventListener('click', (e) => {
   const totalScu = parseInt(totalScuInput.value, 10);
   if (isNaN(totalScu) || totalScu <= 0) {
@@ -40,7 +39,6 @@ containerBreakdownSection.addEventListener('click', (e) => {
   }
 
   if (e.target.classList.contains('scu-increment-btn')) {
-    const scuSize = parseInt(e.target.dataset.scu, 10);
     const countSpan = e.target.nextElementSibling;
     let currentCount = parseInt(countSpan.textContent, 10);
     currentCount++;
@@ -49,7 +47,7 @@ containerBreakdownSection.addEventListener('click', (e) => {
   }
 });
 
-// Resetear todos los inputs
+// RESET BOTÓN
 resetScuInputsBtn.addEventListener('click', () => {
   containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
     span.textContent = '0';
@@ -57,6 +55,7 @@ resetScuInputsBtn.addEventListener('click', () => {
   const totalScu = parseInt(totalScuInput.value, 10);
   updateContainerValidationMessage(totalScu);
 });
+
 
 
 // Escucha cambio de SCU total e invalida
