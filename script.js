@@ -2403,3 +2403,30 @@ const clearOnFocusIfAdding = (e) => {
 if(materialInput) materialInput.addEventListener('focus', clearOnFocusIfAdding);
 if(pickupLocationInput) pickupLocationInput.addEventListener('focus', clearOnFocusIfAdding);
 if(dropoffLocationInput) dropoffLocationInput.addEventListener('focus', clearOnFocusIfAdding);
+
+
+document.querySelectorAll('.btn-scu').forEach(button => {
+    button.addEventListener('click', () => {
+        const scu = parseInt(button.dataset.scu);
+        const totalSCUInput = document.getElementById('total-scu');
+        const totalSCU = parseInt(totalSCUInput.value) || 0;
+        const assignedSCUText = document.getElementById('assigned-scu');
+        let assigned = parseInt(assignedSCUText.dataset.value) || 0;
+
+        if (assigned + scu <= totalSCU) {
+            assigned += scu;
+            assignedSCUText.dataset.value = assigned;
+            assignedSCUText.innerText = `${assigned} / ${totalSCU}`;
+
+            const remaining = totalSCU - assigned;
+            const remainingSpan = document.getElementById('scu-remaining');
+            remainingSpan.innerText = `Faltan ${remaining} SCU por asignar.`;
+
+            if (remaining === 0) {
+                remainingSpan.style.color = 'lightgreen';
+            } else {
+                remainingSpan.style.color = 'gold';
+            }
+        }
+    });
+});
