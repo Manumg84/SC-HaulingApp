@@ -1,3 +1,63 @@
+// == SCU Selector: Variables globales ==
+let tempContainerCounts = { 1:0, 2:0, 4:0, 8:0, 16:0, 24:0, 32:0 };
+
+// Función para actualizar el mensaje de validación de SCU
+function updateContainerValidationMessage(totalScu) {
+    let totalUsed = Object.entries(tempContainerCounts)
+        .reduce((sum, [size, count]) => sum + (parseInt(size) * count), 0);
+    let faltan = totalScu - totalUsed;
+    let msg = "";
+    if (faltan > 0) {
+        msg = `Faltan <span class="text-warning-glow">${faltan}</span> SCU por repartir.`;
+    } else if (faltan < 0) {
+        msg = `Te has pasado por <span class="text-danger">${-faltan}</span> SCU.`;
+    } else {
+        msg = `<span class="text-success">¡Todo correcto!</span>`;
+    }
+    document.getElementById("container-validation-message").innerHTML = msg;
+}
+
+// Escucha cambio de SCU total e invalida
+document.getElementById('totalScu').addEventListener('input', function() {
+    const totalScu = parseInt(this.value, 10) || 0;
+    updateContainerValidationMessage(totalScu);
+});
+
+// RENDER BOTONES DE SCU
+function renderScuButtons() {
+    const sizes = [1, 2, 4, 8, 16, 24, 32];
+    const container = document.getElementById('scu-buttons-group');
+    container.innerHTML = '';
+    sizes.forEach(size => {
+        let btn = document.createElement('button');
+        btn.type = "button";
+        btn.className = "btn btn-outline-primary btn-scu-add m-1";
+        btn.textContent = `${size} SCU`;
+        btn.dataset.scu = size;
+        btn.onclick = function() {
+            tempContainerCounts[size]++;
+            const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
+            updateContainerValidationMessage(totalScu);
+        };
+        container.appendChild(btn);
+    });
+}
+
+// BOTÓN RESET
+document.getElementById('reset-scu-inputs').addEventListener('click', () => {
+    Object.keys(tempContainerCounts).forEach(scu => tempContainerCounts[scu] = 0);
+    const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
+    updateContainerValidationMessage(totalScu);
+});
+
+// MOSTRAR BOTONES AL ABRIR FORM MATERIAL (usa tu trigger adecuado)
+function showScuSelector() {
+    renderScuButtons();
+    const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
+    updateContainerValidationMessage(totalScu);
+}
+showScuSelector();
+
 import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js";
 
 function uuidv4() {
