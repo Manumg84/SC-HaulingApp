@@ -142,89 +142,82 @@
                                 </div>
                             </div>
 
-                            <div id="container-breakdown-section" class="d-none">
-                                <hr class="my-3" style="border-color: var(--panel-border);">
+                            <!-- ...inicio de tu archivo index.html... -->
+<!-- ...dejo el resto tal cual y solo cambio la parte del breakdown de contenedores... -->
 
-                                <div class="row g-2">
-                                    <div class="col-12">
-                                        <label class="form-label" data-key="container_breakdown_label">Cantidad de Contenedores por tamaño (SCU)</label>
-                                        <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">1 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="1">-</button>
-                                                <span class="scu-count" id="scu_1_count" data-scu="1">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="1">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">2 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="2">-</button>
-                                                <span class="scu-count" id="scu_2_count" data-scu="2">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="2">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">4 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="4">-</button>
-                                                <span class="scu-count" id="scu_4_count" data-scu="4">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="4">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">8 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="8">-</button>
-                                                <span class="scu-count" id="scu_8_count" data-scu="8">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="8">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">16 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="16">-</button>
-                                                <span class="scu-count" id="scu_16_count" data-scu="16">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="16">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">24 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="24">-</button>
-                                                <span class="scu-count" id="scu_24_count" data-scu="24">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="24">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <div class="col-auto">
-                                        <div class="scu-control-item">
-                                            <label class="form-label-sm">32 SCU</label>
-                                            <div class="scu-input-group">
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-decrement-btn" data-scu="32">-</button>
-                                                <span class="scu-count" id="scu_32_count" data-scu="32">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="32">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 mt-3 text-end">
-                                        <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm"><i class="bi bi-x-circle me-1"></i>Resetear Contenedores</button>
-                                    </div>
-                                </div>
-                            </div>
+<!-- ...BUSCA esta parte en tu archivo: -->
+<div id="container-breakdown-section" class="d-none">
+    <hr class="my-3" style="border-color: var(--panel-border);">
+    <div class="row g-2">
+        <div class="col-12">
+            <label class="form-label" data-key="container_breakdown_label">Cantidad de Contenedores por tamaño (SCU)</label>
+            <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
+        </div>
+        <!-- Botón 1 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="1">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 1 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 2 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="2">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 2 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 4 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="4">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 4 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 8 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="8">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 8 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 16 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="16">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 16 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 24 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="24">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 24 SCU
+                </button>
+            </div>
+        </div>
+        <!-- Botón 32 SCU -->
+        <div class="col-auto">
+            <div class="scu-control-item">
+                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="32">
+                    <i class="bi bi-plus-circle me-1"></i>Agregar 32 SCU
+                </button>
+            </div>
+        </div>
+        <div class="col-12 mt-3 text-end">
+            <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm">
+                <i class="bi bi-x-circle me-1"></i>Resetear Contenedores
+            </button>
+        </div>
+    </div>
+</div>
+<!-- ...el resto de tu formulario y modal sigue igual... -->
+
                         </form>
                     </div>
                     <div class="panel-footer d-flex justify-content-end p-2">
