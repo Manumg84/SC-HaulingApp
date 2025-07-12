@@ -2,20 +2,62 @@
 let tempContainerCounts = { 1:0, 2:0, 4:0, 8:0, 16:0, 24:0, 32:0 };
 
 // Función para actualizar el mensaje de validación de SCU
+const containerBreakdownSection = document.getElementById('container-breakdown-section');
+const totalScuInput = document.getElementById('totalScu');
+const resetScuInputsBtn = document.getElementById('reset-scu-inputs');
+
 function updateContainerValidationMessage(totalScu) {
-    let totalUsed = Object.entries(tempContainerCounts)
-        .reduce((sum, [size, count]) => sum + (parseInt(size) * count), 0);
-    let faltan = totalScu - totalUsed;
-    let msg = "";
-    if (faltan > 0) {
-        msg = `Faltan <span class="text-warning-glow">${faltan}</span> SCU por repartir.`;
-    } else if (faltan < 0) {
-        msg = `Te has pasado por <span class="text-danger">${-faltan}</span> SCU.`;
-    } else {
-        msg = `<span class="text-success">¡Todo correcto!</span>`;
-    }
-    document.getElementById("container-validation-message").innerHTML = msg;
+  // Calcula el total de SCU seleccionados y actualiza el mensaje
+  let assigned = 0;
+  document.querySelectorAll('.scu-count').forEach(span => {
+    const count = parseInt(span.textContent, 10);
+    const scu = parseInt(span.dataset.scu, 10);
+    assigned += count * scu;
+  });
+  const msg = document.getElementById('container-validation-message');
+  if (assigned < totalScu) {
+    msg.textContent = `Faltan ${totalScu - assigned} SCU por asignar.`;
+    msg.classList.remove('text-success');
+    msg.classList.add('text-danger');
+  } else if (assigned === totalScu) {
+    msg.textContent = `¡Perfecto! Todos los SCU están asignados.`;
+    msg.classList.remove('text-danger');
+    msg.classList.add('text-success');
+  } else {
+    msg.textContent = `¡Te has pasado ${assigned - totalScu} SCU!`;
+    msg.classList.remove('text-success');
+    msg.classList.add('text-danger');
+  }
 }
+
+// Al hacer click en cualquier botón de breakdown (+)
+containerBreakdownSection.addEventListener('click', (e) => {
+  const totalScu = parseInt(totalScuInput.value, 10);
+  if (isNaN(totalScu) || totalScu <= 0) {
+    alert("Por favor, introduce un valor válido de SCU total antes de asignar contenedores.");
+    totalScuInput.focus();
+    return;
+  }
+
+  if (e.target.classList.contains('scu-increment-btn')) {
+    const scuSize = parseInt(e.target.dataset.scu, 10);
+    const countSpan = e.target.nextElementSibling;
+    let currentCount = parseInt(countSpan.textContent, 10);
+    currentCount++;
+    countSpan.textContent = currentCount;
+    updateContainerValidationMessage(totalScu);
+  }
+});
+
+// Resetear todos los inputs
+resetScuInputsBtn.addEventListener('click', () => {
+  containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
+    span.textContent = '0';
+  });
+  const totalScu = parseInt(totalScuInput.value, 10);
+  updateContainerValidationMessage(totalScu);
+});
+
 
 // Escucha cambio de SCU total e invalida
 document.getElementById('totalScu').addEventListener('input', function() {
