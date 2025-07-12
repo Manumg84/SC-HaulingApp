@@ -147,74 +147,51 @@
 
 <!-- ...BUSCA esta parte en tu archivo: -->
 <div id="container-breakdown-section" class="d-none">
-    <hr class="my-3" style="border-color: var(--panel-border);">
-    <div class="row g-2">
-        <div class="col-12">
-            <label class="form-label" data-key="container_breakdown_label">Cantidad de Contenedores por tamaño (SCU)</label>
-            <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
-        </div>
-        <!-- Botón 1 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="1">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 1 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 2 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="2">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 2 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 4 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="4">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 4 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 8 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="8">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 8 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 16 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="16">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 16 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 24 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="24">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 24 SCU
-                </button>
-            </div>
-        </div>
-        <!-- Botón 32 SCU -->
-        <div class="col-auto">
-            <div class="scu-control-item">
-                <button type="button" class="btn btn-sm btn-outline-primary scu-increment-btn" data-scu="32">
-                    <i class="bi bi-plus-circle me-1"></i>Agregar 32 SCU
-                </button>
-            </div>
-        </div>
-        <div class="col-12 mt-3 text-end">
-            <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm">
-                <i class="bi bi-x-circle me-1"></i>Resetear Contenedores
-            </button>
-        </div>
+  <hr class="my-3" style="border-color: var(--panel-border);">
+  <div class="row g-2">
+    <div class="col-12">
+      <label class="form-label" data-key="container_breakdown_label">Cantidad de Contenedores por tamaño (SCU)</label>
+      <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
     </div>
+    <!-- 1 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="1">+ 1 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_1_count" data-scu="1">0</span>
+    </div>
+    <!-- 2 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="2">+ 2 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_2_count" data-scu="2">0</span>
+    </div>
+    <!-- 4 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="4">+ 4 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_4_count" data-scu="4">0</span>
+    </div>
+    <!-- 8 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="8">+ 8 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_8_count" data-scu="8">0</span>
+    </div>
+    <!-- 16 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="16">+ 16 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_16_count" data-scu="16">0</span>
+    </div>
+    <!-- 24 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="24">+ 24 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_24_count" data-scu="24">0</span>
+    </div>
+    <!-- 32 SCU -->
+    <div class="col-auto">
+      <button type="button" class="btn btn-outline-primary scu-increment-btn" data-scu="32">+ 32 SCU</button>
+      <span class="scu-count ms-2 me-4" id="scu_32_count" data-scu="32">0</span>
+    </div>
+    <div class="col-12 mt-3 text-end">
+      <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm"><i class="bi bi-x-circle me-1"></i>Resetear Contenedores</button>
+    </div>
+  </div>
 </div>
 <!-- ...el resto de tu formulario y modal sigue igual... -->
 
