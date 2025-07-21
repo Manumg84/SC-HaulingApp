@@ -110,7 +110,7 @@ function uuidv4() {
 
 async function cargarListasDesdeJson() {
   try {
-    const response = await fetch('https://manumg84.github.io/SC-CargoOrganizer/data.json'); 
+    const response = await fetch('https://manumg84.github.io/SC-HaulingApp/data.json'); 
     const data = await response.json();
 
     const materialList = document.getElementById("materials-datalist");
