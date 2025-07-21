@@ -190,6 +190,37 @@ fetch("distancias_stanton.json")
 // FIN BLOQUE CARGA DE DISTANCIAS ENTRE LOCALIZACIONES
 // ============================================================
 
+  // ============================================================
+// INICIO BLOQUE FUNCION CALCULAR DISTANCIA ENTRE LOCALIZACIONES
+// ============================================================
+
+/**
+ * Calcula la distancia entre dos localizaciones del sistema Stanton.
+ * Si no hay datos disponibles entre ambas, devuelve null.
+ * 
+ * @param {string} origen - Nombre del lugar de origen (ej: "Microtech")
+ * @param {string} destino - Nombre del lugar de destino (ej: "Crusader")
+ * @returns {number|null} - Distancia en Gm o null si no existe
+ */
+function calcularDistancia(origen, destino) {
+  if (distancias[origen] && distancias[origen][destino] !== undefined) {
+    return distancias[origen][destino];
+  } else if (distancias[destino] && distancias[destino][origen] !== undefined) {
+    return distancias[destino][origen];
+  } else {
+    console.warn(`No se encontró distancia entre "${origen}" y "${destino}"`);
+    return null;
+  }
+}
+
+// Ejemplo de uso:
+// const distancia = calcularDistancia("Microtech", "Arccorp");
+// console.log("Distancia:", distancia, "Gm");
+
+// ============================================================
+// FIN BLOQUE FUNCION CALCULAR DISTANCIA ENTRE LOCALIZACIONES
+// ============================================================
+  
   const langSwitcher = document.getElementById('lang-switcher');
   const langFlag = document.getElementById('lang-flag');
   let currentLang = localStorage.getItem('lang') || 'es';
