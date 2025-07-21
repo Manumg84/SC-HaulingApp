@@ -165,6 +165,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ============================================================
+// INICIO BLOQUE CARGA DE DISTANCIAS ENTRE LOCALIZACIONES
+// ============================================================
+
+// Objeto global para almacenar distancias
+let distancias = {};
+
+// Cargar archivo distancias_stanton.json
+fetch("distancias_stanton.json")
+  .then((response) => response.json())
+  .then((data) => {
+    distancias = data;
+    console.log("Distancias cargadas correctamente:", distancias);
+
+    // Si necesitas lanzar alguna función después de cargar distancias, hazlo aquí
+    // por ejemplo: inicializarRutas();
+  })
+  .catch((error) => {
+    console.error("Error al cargar distancias:", error);
+  });
+
+// ============================================================
+// FIN BLOQUE CARGA DE DISTANCIAS ENTRE LOCALIZACIONES
+// ============================================================
+
   const langSwitcher = document.getElementById('lang-switcher');
   const langFlag = document.getElementById('lang-flag');
   let currentLang = localStorage.getItem('lang') || 'es';
