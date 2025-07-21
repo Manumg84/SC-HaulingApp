@@ -220,6 +220,65 @@ function calcularDistancia(origen, destino) {
 // ============================================================
 // FIN BLOQUE FUNCION CALCULAR DISTANCIA ENTRE LOCALIZACIONES
 // ============================================================
+
+// ============================================================
+// INICIO BLOQUE RENDERIZADO VISUAL DE RUTA CON BOOTSTRAP
+// ============================================================
+
+/**
+ * Muestra en la interfaz los pasos de la ruta y la distancia total.
+ * Requiere un contenedor <div id="ruta-output"></div> en el HTML.
+ * 
+ * @param {string[]} ruta - Array de localizaciones ordenadas.
+ */
+function mostrarRuta(ruta) {
+  const resultado = generarRutaConDistancias(ruta);
+  const contenedor = document.getElementById("ruta-output");
+
+  if (!contenedor) return;
+
+  contenedor.innerHTML = ""; // Limpiar contenido anterior
+
+  const titulo = document.createElement("h4");
+  titulo.textContent = "Ruta generada:";
+  contenedor.appendChild(titulo);
+
+  const tabla = document.createElement("table");
+  tabla.className = "table table-bordered table-sm mt-2";
+  tabla.innerHTML = `
+    <thead class="table-dark">
+      <tr>
+        <th>Desde</th>
+        <th>Hasta</th>
+        <th>Distancia</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${resultado.pasos
+        .map(
+          paso => `
+        <tr>
+          <td>${paso.desde}</td>
+          <td>${paso.hasta}</td>
+          <td>${paso.distancia}</td>
+        </tr>
+      `
+        )
+        .join("")}
+    </tbody>
+  `;
+
+  contenedor.appendChild(tabla);
+
+  const resumen = document.createElement("div");
+  resumen.className = "alert alert-info mt-3";
+  resumen.innerHTML = `<strong>Distancia total:</strong> ${resultado.total}`;
+  contenedor.appendChild(resumen);
+}
+
+// ============================================================
+// FIN BLOQUE RENDERIZADO VISUAL DE RUTA CON BOOTSTRAP
+// ============================================================
   
   const langSwitcher = document.getElementById('lang-switcher');
   const langFlag = document.getElementById('lang-flag');
