@@ -1,104 +1,3 @@
-// == SCU Selector: Variables globales ==
-let tempContainerCounts = { 1:0, 2:0, 4:0, 8:0, 16:0, 24:0, 32:0 };
-
-// Función para actualizar el mensaje de validación de SCU
-const containerBreakdownSection = document.getElementById('container-breakdown-section');
-const totalScuInput = document.getElementById('totalScu');
-const resetScuInputsBtn = document.getElementById('reset-scu-inputs');
-
-function updateContainerValidationMessage(totalScu) {
-  let assigned = 0;
-  document.querySelectorAll('.scu-count').forEach(span => {
-    const count = parseInt(span.textContent, 10);
-    const scu = parseInt(span.dataset.scu, 10);
-    assigned += count * scu;
-  });
-  const msg = document.getElementById('container-validation-message');
-  if (assigned < totalScu) {
-    msg.textContent = `Faltan ${totalScu - assigned} SCU por asignar.`;
-    msg.classList.remove('text-success');
-    msg.classList.add('text-danger');
-  } else if (assigned === totalScu) {
-    msg.textContent = `¡Perfecto! Todos los SCU están asignados.`;
-    msg.classList.remove('text-danger');
-    msg.classList.add('text-success');
-  } else {
-    msg.textContent = `¡Te has pasado ${assigned - totalScu} SCU!`;
-    msg.classList.remove('text-success');
-    msg.classList.add('text-danger');
-  }
-}
-
-// EVENTO PARA BOTONES +
-containerBreakdownSection.addEventListener('click', (e) => {
-  const totalScu = parseInt(totalScuInput.value, 10);
-  if (isNaN(totalScu) || totalScu <= 0) {
-    alert("Por favor, introduce un valor válido de SCU total antes de asignar contenedores.");
-    totalScuInput.focus();
-    return;
-  }
-
-  if (e.target.classList.contains('scu-increment-btn')) {
-    const countSpan = e.target.nextElementSibling;
-    let currentCount = parseInt(countSpan.textContent, 10);
-    currentCount++;
-    countSpan.textContent = currentCount;
-    updateContainerValidationMessage(totalScu);
-  }
-});
-
-// RESET BOTÓN
-resetScuInputsBtn.addEventListener('click', () => {
-  containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
-    span.textContent = '0';
-  });
-  const totalScu = parseInt(totalScuInput.value, 10);
-  updateContainerValidationMessage(totalScu);
-});
-
-
-
-// Escucha cambio de SCU total e invalida
-document.getElementById('totalScu').addEventListener('input', function() {
-    const totalScu = parseInt(this.value, 10) || 0;
-    updateContainerValidationMessage(totalScu);
-});
-
-// RENDER BOTONES DE SCU
-function renderScuButtons() {
-    const sizes = [1, 2, 4, 8, 16, 24, 32];
-    const container = document.getElementById('scu-buttons-group');
-    container.innerHTML = '';
-    sizes.forEach(size => {
-        let btn = document.createElement('button');
-        btn.type = "button";
-        btn.className = "btn btn-outline-primary btn-scu-add m-1";
-        btn.textContent = `${size} SCU`;
-        btn.dataset.scu = size;
-        btn.onclick = function() {
-            tempContainerCounts[size]++;
-            const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
-            updateContainerValidationMessage(totalScu);
-        };
-        container.appendChild(btn);
-    });
-}
-
-// BOTÓN RESET
-document.getElementById('reset-scu-inputs').addEventListener('click', () => {
-    Object.keys(tempContainerCounts).forEach(scu => tempContainerCounts[scu] = 0);
-    const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
-    updateContainerValidationMessage(totalScu);
-});
-
-// MOSTRAR BOTONES AL ABRIR FORM MATERIAL (usa tu trigger adecuado)
-function showScuSelector() {
-    renderScuButtons();
-    const totalScu = parseInt(document.getElementById('totalScu').value, 10) || 0;
-    updateContainerValidationMessage(totalScu);
-}
-showScuSelector();
-
 import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js";
 
 function uuidv4() {
@@ -108,9 +7,43 @@ function uuidv4() {
   });
 }
 
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const soundBuffers = {};
+
+async function loadSound(url, name) {
+    try {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        soundBuffers[name] = audioBuffer;
+    } catch (error) {
+        console.error(`Error loading sound ${name} from ${url}:`, error);
+    }
+}
+
+function playSound(name) {
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    const buffer = soundBuffers[name];
+    if (buffer) {
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+    } else {
+        console.warn(`Sound '${name}' not loaded.`);
+    }
+}
+
+loadSound('ui_confirm.mp3', 'confirm');
+loadSound('ui_delete.mp3', 'delete');
+loadSound('ui_load.mp3', 'load');
+loadSound('ui_deliver.mp3', 'deliver');
+
 async function cargarListasDesdeJson() {
   try {
-    const response = await fetch('https://manumg84.github.io/SC-HaulingApp/data.json'); 
+    const response = await fetch('https://manumg84.github.io/SC-CargoOrganizer/data.json'); 
     const data = await response.json();
 
     const materialList = document.getElementById("materials-datalist");
@@ -145,6 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearAllButton = document.getElementById('clear-all');
   const loadAllPendingButton = document.getElementById('load-all-pending');
   const noMissionsRow = document.getElementById('no-missions-row');
+  const missionCardsContainer = document.getElementById('mission-cards-container');
+  const noMissionsMessage = document.getElementById('no-missions-message-mission-view');
   const summaryFooter = document.getElementById('summary-footer');
   
   const addMaterialFormContainer = document.getElementById('add-material-form-container');
@@ -729,92 +664,116 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const renderMissionView = (sortedMissions) => {
-    missionTableBody.innerHTML = '';
+    missionCardsContainer.innerHTML = '';
     if (missions.length === 0) {
-      missionTableBody.appendChild(noMissionsRow);
+      noMissionsMessage.style.display = 'block';
       return;
+    } else {
+      noMissionsMessage.style.display = 'none';
     }
 
     sortedMissions.forEach(mission => {
-      const totalScuForMission = Array.isArray(mission.cargos) ? mission.cargos.reduce((sum, cargo) => sum + calculateTotalScu(cargo), 0) : 0;
-      const t = translations[currentLang];
-      const missionPayout = mission.payout ? `${mission.payout.toLocaleString()} aUEC` : t.no_payout;
-      const missionType = mission.type ? `<span class="mission-type-badge">${mission.type.toUpperCase()}</span>` : '';
+        const t = translations[currentLang];
+        const missionCard = document.createElement('div');
+        missionCard.className = 'mission-card mb-4';
+        missionCard.dataset.missionId = mission.id;
 
-      const groupHeader = document.createElement('tr');
-      groupHeader.className = 'mission-group-header';
-      groupHeader.dataset.missionId = mission.id;
-      groupHeader.innerHTML = `
-        <td colspan="6">
-          <span class="mission-name editable-name" title="Haz clic para editar">${mission.name}</span>
-          <i class="bi bi-chevron-down me-2 toggle-collapse"></i>
-          ${missionType}
-          <span class="mission-details">(${totalScuForMission} SCU / ${missionPayout})</span>
-        </td>
-        <td class="text-center">
-          <button class="btn btn-info btn-sm edit-mission-btn" title="Editar Misión"><i class="bi bi-pencil-square"></i></button>
-          <button class="btn btn-primary btn-sm add-material-btn" title="Añadir Material"><i class="bi bi-plus-circle"></i></button>
-          <button class="btn btn-danger btn-sm delete-mission-btn" title="Eliminar Misión"><i class="bi bi-trash"></i></button>
-        </td>
-      `;
-      missionTableBody.appendChild(groupHeader);
-      
-      if (!Array.isArray(mission.cargos) || mission.cargos.length === 0) {
-        const emptyRow = document.createElement('tr');
-        emptyRow.className = 'mission-item';
-        emptyRow.dataset.missionId = mission.id;
-        emptyRow.innerHTML = `<td colspan="7" class="text-center text-muted-glow p-3">No hay materiales en esta misión.</td>`;
-        missionTableBody.appendChild(emptyRow);
-      } else {
-        mission.cargos.forEach(cargo => {
-          const row = document.createElement('tr');
-          row.className = 'mission-item';
-          row.dataset.id = cargo.id;
-          row.dataset.missionId = mission.id;
-          
-          let statusBadge;
-          let actions;
-          const t = translations[currentLang];
-          const cargoOverallStatus = getCargoOverallStatus(cargo);
+        const totalScuForMission = (Array.isArray(mission.cargos) ? mission.cargos.reduce((sum, cargo) => sum + (cargo.totalScu || 0), 0) : 0);
+        
+        let loadedScuForMission = 0;
+        let deliveredScuForMission = 0;
+        if (Array.isArray(mission.cargos)) {
+            mission.cargos.forEach(cargo => {
+                if (Array.isArray(cargo.containers)) {
+                    cargo.containers.forEach(container => {
+                        if (container.status === 'loaded') {
+                            loadedScuForMission += container.size;
+                        } else if (container.status === 'delivered') {
+                            deliveredScuForMission += container.size;
+                        }
+                    });
+                }
+            });
+        }
+        
+        const progress = totalScuForMission > 0 ? ((loadedScuForMission * 0.5 + deliveredScuForMission) / totalScuForMission) * 100 : 0;
+        const missionPayout = mission.payout ? `${mission.payout.toLocaleString()} aUEC` : t.no_payout;
 
-          switch(cargoOverallStatus) {
-            case 'loaded':
-              statusBadge = `<span class="status-badge status-loaded">${t.loaded}</span>`;
-              actions = `
-                <button class="btn btn-success btn-sm deliver-btn" title="Entregar"><i class="bi bi-truck"></i></button>
-                <button class="btn btn-warning btn-sm unload-btn" title="Descargar"><i class="bi bi-box-arrow-up"></i></button>
-                <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-              `;
-              break;
-            case 'delivered':
-              statusBadge = `<span class="status-badge status-delivered">${t.delivered}</span>`;
-              actions = `<button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>`;
-              break;
-            default: // pending
-              statusBadge = `<span class="status-badge status-pending">${t.pending}</span>`;
-              actions = `
-                <button class="btn btn-primary btn-sm load-btn" title="Cargar"><i class="bi bi-box-arrow-in-down"></i></button>
-                <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-                <button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
-              `;
-          }
+        missionCard.innerHTML = `
+            <div class="mission-card-header">
+                <div class="d-flex align-items-center flex-wrap">
+                    <h3 class="mission-card-title me-3" title="Edit Mission">${mission.name}</h3>
+                    <div class="mission-card-details">
+                         <span class="mission-type-badge-sm">${mission.type.toUpperCase()}</span>
+                         <span class="mx-2">|</span>
+                         <span>${totalScuForMission} SCU</span>
+                         <span class="mx-2">|</span>
+                         <span>${missionPayout}</span>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm add-material-btn" title="Material"><i class="bi bi-plus-circle me-1"></i>Materiales</button>
+                    <button class="btn btn-danger btn-sm delete-mission-btn" title="Delete Mission"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+            <div class="mission-card-body">
+                <div class="d-flex flex-column gap-3">
+                    ${!Array.isArray(mission.cargos) || mission.cargos.length === 0 
+                        ? `<div class="text-center text-muted-glow p-3">No hay materiales en esta misión.</div>`
+                        : mission.cargos.map(cargo => {
+                            const cargoOverallStatus = getCargoOverallStatus(cargo);
+                            let statusBadge, actions;
 
-          const containersString = formatContainers(cargo.containers);
-          const pickup = parseLocation(cargo.pickupLocation);
-          const dropoff = parseLocation(cargo.dropoffLocation);
+                            switch(cargoOverallStatus) {
+                                case 'loaded':
+                                    statusBadge = `<span class="status-badge status-loaded">${t.loaded}</span>`;
+                                    actions = `<button class="btn btn-success btn-sm deliver-btn" title="Deliver"><i class="bi bi-truck"></i></button>
+                                               <button class="btn btn-warning btn-sm unload-btn" title="Unload"><i class="bi bi-box-arrow-up"></i></button>`;
+                                    break;
+                                case 'delivered':
+                                    statusBadge = `<span class="status-badge status-delivered">${t.delivered}</span>`;
+                                    actions = `<button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>`;
+                                    break;
+                                default: // pending
+                                    statusBadge = `<span class="status-badge status-pending">${t.pending}</span>`;
+                                    actions = `<button class="btn btn-primary btn-sm load-btn" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
+                                               <button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>`;
+                            }
 
-          row.innerHTML = `
-            <td><i class="bi bi-box me-2"></i>${cargo.material}</td>
-            <td class="location-cell" data-details="${pickup.details || ''}">${getLocationIcon(pickup.name)}${pickup.name}</td>
-            <td class="location-cell" data-details="${dropoff.details || ''}">${getLocationIcon(dropoff.name)}${dropoff.name}</td>
-            <td class="text-center">${calculateTotalScu(cargo)}</td>
-            <td><span class="cargo-containers-list">${containersString}</span></td>
-            <td class="text-center">${statusBadge}</td>
-            <td class="text-center cargo-actions">${actions}</td>
-          `;
-          missionTableBody.appendChild(row);
-        });
-      }
+                            const pickup = parseLocation(cargo.pickupLocation);
+                            const dropoff = parseLocation(cargo.dropoffLocation);
+
+                            return `
+                                <div class="material-card" data-id="${cargo.id}">
+                                    <div class="material-card-main">
+                                        <div class="material-info-block">
+                                            <div class="material-info">
+                                                <i class="bi bi-box me-2"></i>
+                                                <span>${cargo.material} - ${cargo.totalScu} SCU</span>
+                                                <span class="cargo-containers-list edit-trigger" title="${t.edit_material_in} ${mission.name}">(${formatContainers(cargo.containers)})</span>
+                                            </div>
+                                            <div class="material-locations">
+                                                <span>${getLocationIcon(pickup.name)}${pickup.name}</span>
+                                                <i class="bi bi-arrow-right mx-2"></i>
+                                                <span>${getLocationIcon(dropoff.name)}${dropoff.name}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="material-card-actions">
+                                        ${statusBadge}
+                                        <div class="btn-group cargo-actions">
+                                            <button class="btn btn-info btn-sm edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+                                            ${actions}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')
+                    }
+                </div>
+            </div>
+        `;
+        missionCardsContainer.appendChild(missionCard);
     });
   };
   
@@ -870,21 +829,21 @@ document.addEventListener("DOMContentLoaded", () => {
           case 'loaded':
             statusBadge = `<span class="status-badge status-loaded">${t.loaded}</span>`;
             actions = `
-              <button class="btn btn-success btn-sm deliver-btn" title="Entregar"><i class="bi bi-truck"></i></button>
-              <button class="btn btn-warning btn-sm unload-btn" title="Descargar"><i class="bi bi-box-arrow-up"></i></button>
-              <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn btn-success btn-sm deliver-btn" title="Deliver"><i class="bi bi-truck"></i></button>
+              <button class="btn btn-warning btn-sm unload-btn" title="Unload"><i class="bi bi-box-arrow-up"></i></button>
+              <button class="btn btn-info btn-sm edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
             `;
             break;
           case 'delivered':
             statusBadge = `<span class="status-badge status-delivered">${t.delivered}</span>`;
-            actions = `<button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>`;
+            actions = `<button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>`;
             break;
           default: // pending
             statusBadge = `<span class="status-badge status-pending">${t.pending}</span>`;
             actions = `
-              <button class="btn btn-primary btn-sm load-btn" title="Cargar"><i class="bi bi-box-arrow-in-down"></i></button>
-              <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
+              <button class="btn btn-primary btn-sm load-btn" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
+              <button class="btn btn-info btn-sm edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>
             `;
         }
         const missionType = cargo.missionType ? `<span class="mission-type-badge-sm">${cargo.missionType.toUpperCase()}</span>` : '';
@@ -957,21 +916,21 @@ document.addEventListener("DOMContentLoaded", () => {
           case 'loaded':
             statusBadge = `<span class="status-badge status-loaded">${t.loaded}</span>`;
             actions = `
-              <button class="btn btn-success btn-sm deliver-btn" title="Entregar"><i class="bi bi-truck"></i></button>
-              <button class="btn btn-warning btn-sm unload-btn" title="Descargar"><i class="bi bi-box-arrow-up"></i></button>
-              <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn btn-success btn-sm deliver-btn" title="Deliver"><i class="bi bi-truck"></i></button>
+              <button class="btn btn-warning btn-sm unload-btn" title="Unload"><i class="bi bi-box-arrow-up"></i></button>
+              <button class="btn btn-info btn-sm edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
             `;
             break;
           case 'delivered':
             statusBadge = `<span class="status-badge status-delivered">${t.delivered}</span>`;
-            actions = `<button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>`;
+            actions = `<button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>`;
             break;
           default: // pending
             statusBadge = `<span class="status-badge status-pending">${t.pending}</span>`;
             actions = `
-              <button class="btn btn-primary btn-sm load-btn" title="Cargar"><i class="bi bi-box-arrow-in-down"></i></button>
-              <button class="btn btn-info btn-sm edit-btn" title="Editar"><i class="bi bi-pencil-fill"></i></button>
-              <button class="btn btn-danger btn-sm delete-btn" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
+              <button class="btn btn-primary btn-sm load-btn" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
+              <button class="btn btn-info btn-sm edit-btn" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+              <button class="btn btn-danger btn-sm delete-btn" title="Delete"><i class="bi bi-trash-fill"></i></button>
             `;
         }
         const missionType = cargo.missionType ? `<span class="mission-type-badge-sm">${cargo.missionType.toUpperCase()}</span>` : '';
@@ -1117,12 +1076,15 @@ document.addEventListener("DOMContentLoaded", () => {
           const containerButtons = document.createElement('div');
           containerButtons.className = 'container-buttons';
 
-          const availableCounts = availableContainers.reduce((acc, container) => {
-            acc[container.size] = (acc[container.size] || 0) + 1;
-            return acc;
+          const containerCounts = cargos.reduce((acc, cargo) => {
+            const counts = {};
+            Array.isArray(cargo.containers) ? cargo.containers.forEach(c => {
+              counts[c.size] = (counts[c.size] || 0) + 1;
+            }) : null;
+            return counts;
           }, {});
 
-          Object.entries(availableCounts).sort(([sA],[sB]) => parseInt(sA)-parseInt(sB)).forEach(([size, count]) => {
+          Object.entries(containerCounts).sort(([sA],[sB]) => parseInt(sA)-parseInt(sB)).forEach(([size, count]) => {
             const btn = document.createElement('button');
             btn.className = 'btn btn-sm btn-outline-info me-1 mb-1 load-container-btn';
             btn.textContent = `${count}x ${size} SCU`;
@@ -1258,11 +1220,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.getElementById('totalScu').value = ''; 
     
-    materialForm.querySelectorAll('.scu-count').forEach(span => {
+    // Reset container count badges manually for a new material form
+    materialForm.querySelectorAll('.scu-count-badge').forEach(span => {
       span.textContent = '0';
-    });
-    materialForm.querySelectorAll('.scu-decrement-btn').forEach(btn => {
-      btn.disabled = true;
+      span.style.display = 'none';
     });
 
     const t = translations[currentLang];
@@ -1293,12 +1254,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return acc;
     }, {}) : {};
 
-    materialForm.querySelectorAll('.scu-count').forEach(span => {
+    materialForm.querySelectorAll('.scu-count-badge').forEach(span => {
       const scuSize = parseInt(span.dataset.scu, 10);
       const count = containerCounts[scuSize] || 0;
       span.textContent = count;
-      const decrementBtn = span.previousElementSibling; 
-      if (decrementBtn) decrementBtn.disabled = (count === 0);
+      span.style.display = count > 0 ? 'inline-block' : 'none';
     });
 
     const t = translations[currentLang];
@@ -1349,11 +1309,12 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTable();
     isNewMissionCreation = true; 
     showAddMaterialForm(newMission.id, newMission.name);
+    playSound('confirm');
   });
   
   const updateContainerValidationMessage = (targetScu) => {
     let currentScu = 0;
-    containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
+    containerBreakdownSection.querySelectorAll('.scu-count-badge').forEach(span => {
       const scuSize = parseInt(span.dataset.scu, 10);
       const count = parseInt(span.textContent, 10) || 0;
       currentScu += scuSize * count;
@@ -1394,7 +1355,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const containersData = [];
     let assignedScu = 0;
-    containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
+    containerBreakdownSection.querySelectorAll('.scu-count-badge').forEach(span => {
         const scuSize = parseInt(span.dataset.scu, 10);
         const count = parseInt(span.textContent, 10) || 0;
         for (let i = 0; i < count; i++) {
@@ -1419,7 +1380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const oldContainersById = new Map(Array.isArray(existingCargo.containers) ? existingCargo.containers.map(c => [c.id, c]) : []);
 
         const newContainerCounts = {};
-        containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
+        containerBreakdownSection.querySelectorAll('.scu-count-badge').forEach(span => {
             const scuSize = parseInt(span.dataset.scu, 10);
             const count = parseInt(span.textContent, 10) || 0;
             newContainerCounts[scuSize] = count;
@@ -1481,15 +1442,13 @@ document.addEventListener("DOMContentLoaded", () => {
       missions[missionIndex].cargos.push(newCargo);
       
       document.getElementById('totalScu').value = '';
-      materialForm.querySelectorAll('.scu-count').forEach(span => {
+      materialForm.querySelectorAll('.scu-count-badge').forEach(span => {
         span.textContent = '0';
-      });
-      materialForm.querySelectorAll('.scu-decrement-btn').forEach(btn => {
-        btn.disabled = true;
+        span.style.display = 'none';
       });
       updateContainerValidationMessage(0); 
 
-      document.getElementById('material').focus();
+      submitMaterialBtn.focus();
     }
 
     saveMissions();
@@ -1504,36 +1463,52 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (e.target.classList.contains('scu-increment-btn')) {
-      const scuSize = parseInt(e.target.dataset.scu, 10);
+    // Handle left-click on add button to increment
+    if (e.target.classList.contains('scu-add-btn') && e.type === 'click') {
       const countSpan = e.target.previousElementSibling;
       let currentCount = parseInt(countSpan.textContent, 10);
       currentCount++;
       countSpan.textContent = currentCount;
-      const decrementBtn = e.target.previousElementSibling.previousElementSibling;
-      if (decrementBtn) decrementBtn.disabled = false;
+      countSpan.style.display = 'inline-block';
       updateContainerValidationMessage(totalScu);
-    } else if (e.target.classList.contains('scu-decrement-btn')) {
-      const scuSize = parseInt(e.target.dataset.scu, 10);
-      const countSpan = e.target.nextElementSibling;
-      let currentCount = parseInt(countSpan.textContent, 10);
-      if (currentCount > 0) {
-        currentCount--;
-        countSpan.textContent = currentCount;
-      }
-      e.target.disabled = (currentCount === 0);
-      updateContainerValidationMessage(totalScu);
+    }
+    
+    // Handle right-click on add button to decrement
+    if (e.target.classList.contains('scu-add-btn') && e.type === 'contextmenu') {
+        e.preventDefault(); // Prevent context menu from appearing
+        const countSpan = e.target.previousElementSibling;
+        let currentCount = parseInt(countSpan.textContent, 10);
+        if (currentCount > 0) {
+            currentCount--;
+            countSpan.textContent = currentCount;
+            if (currentCount === 0) {
+                countSpan.style.display = 'none';
+            }
+            updateContainerValidationMessage(totalScu);
+        }
+    }
+  });
+
+  // Need to also listen for contextmenu for the right-click decrement
+  containerBreakdownSection.addEventListener('contextmenu', (e) => {
+    if (e.target.classList.contains('scu-add-btn')) {
+        e.preventDefault();
+        containerBreakdownSection.dispatchEvent(new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            target: e.target,
+            type: 'contextmenu' // Pass type to handler
+        }));
     }
   });
 
   resetScuInputsBtn.addEventListener('click', () => {
-    containerBreakdownSection.querySelectorAll('.scu-count').forEach(span => {
+    containerBreakdownSection.querySelectorAll('.scu-count-badge').forEach(span => {
       span.textContent = '0';
+      span.style.display = 'none';
     });
-    containerBreakdownSection.querySelectorAll('.scu-decrement-btn').forEach(btn => {
-      btn.disabled = true;
-    });
-    const totalScu = parseInt(totalScuInput.value, 10);
+    const totalScu = parseInt(totalScuInput.value, 10) || 0;
     updateContainerValidationMessage(totalScu);
   });
 
@@ -1552,7 +1527,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById('summary-tab-content').addEventListener('click', (e) => {
     const button = e.target.closest('button');
-    const editableName = e.target.closest('.editable-name');
+    const editableName = e.target.closest('.editable-name, .mission-card-title');
     const locationCell = e.target.closest('.location-cell');
     const editTrigger = e.target.closest('.edit-trigger');
     
@@ -1591,10 +1566,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const missionHeader = e.target.closest('.mission-group-header');
-    
-    if (editableName || (button && button.classList.contains('edit-mission-btn'))) {
-      const missionId = parseInt(missionHeader.dataset.missionId, 10);
+    const missionCard = e.target.closest('.mission-card');
+    const materialCard = e.target.closest('.material-card');
+
+    if (editableName) {
+      const missionId = parseInt(missionCard.dataset.missionId, 10);
       const mission = missions.find(m => m.id === missionId);
       if (mission) {
         editMissionIdInput.value = mission.id;
@@ -1605,124 +1581,113 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       return;
     }
-
-    const cargoRow = e.target.closest('.mission-item, .location-item');
-
-    if ((button && button.classList.contains('edit-btn')) || editTrigger) {
-      if(cargoRow) {
-        const cargoId = parseInt(cargoRow.dataset.id, 10);
-        const missionId = parseInt(cargoRow.dataset.missionId, 10);
-        const mission = missions.find(m => m.id === missionId);
-        const cargo = mission ? (Array.isArray(mission.cargos) ? mission.cargos.find(c => c.id === cargoId) : null) : null; 
-        if(cargo && mission) {
-          showEditMaterialForm(cargo, mission.id, mission.name);
-        }
-      }
-      return; 
-    }
-
-    if (button && missionHeader && !cargoRow) { 
-      const missionId = parseInt(missionHeader.dataset.missionId, 10);
-      if (!missionId) return; 
+    
+    // Actions on the mission card itself (add/delete mission)
+    if (button && missionCard && !materialCard) {
+      const missionId = parseInt(missionCard.dataset.missionId, 10);
+      if (!missionId) return;
 
       const mission = missions.find(m => m.id === missionId);
 
       if (button.classList.contains('add-material-btn')) {
         showAddMaterialForm(mission.id, mission.name);
-      } else if(button.classList.contains('delete-mission-btn')) {
+      } else if (button.classList.contains('delete-mission-btn')) {
         if (confirm('¿Estás seguro de que quieres eliminar esta misión y toda su carga? Esta acción no se puede deshacer.')) {
-          missions = missions.filter(m => m.id !== missionId);
-          ships.forEach(s => {
+            missions = missions.filter(m => m.id !== missionId);
+            // This part is complex, might need to re-evaluate if it's correct
+            const missionCargos = mission.cargos ? mission.cargos.map(c => c.id) : [];
+            ships.forEach(s => {
               s.platforms.forEach(p => {
-                  p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => {
-                      const { cargo } = findCargoAndMission(lc.cargoId);
-                      return !cargo || cargo.missionId !== missionId; 
-                  }) : [];
-                  p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
+                  if (Array.isArray(p.loadedContainers)) {
+                      p.loadedContainers = p.loadedContainers.filter(lc => !missionCargos.includes(lc.cargoId));
+                      p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
+                  }
               });
-          });
-          if (parseInt(missionIdInput.value, 10) === missionId) {
-            hideAddMaterialForm();
-          }
-          saveMissions();
-          saveShips();
-          renderTable();
+            });
+            if (parseInt(missionIdInput.value, 10) === missionId) {
+                hideAddMaterialForm();
+            }
+            saveMissions();
+            saveShips();
+            renderTable();
         }
       }
-    } else if (button && cargoRow) {
-      const cargoId = parseInt(cargoRow.dataset.id, 10);
-      const missionId = parseInt(cargoRow.dataset.missionId, 10);
-      const mission = missions.find(m => m.id === missionId);
-      const cargo = mission ? (Array.isArray(mission.cargos) ? mission.cargos.find(c => c.id === cargoId) : null) : null; 
+      return;
+    }
 
-      if (button.classList.contains('delete-btn')) {
-        if (mission) {
-          ships.forEach(s => {
-            s.platforms.forEach(p => {
-              p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => lc.cargoId !== cargoId) : [];
-              p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
-            });
-          });
-          if (Array.isArray(cargo.containers)) {
-            cargo.containers.forEach(c => {
-                c.status = 'pending';
-                c.location = null;
-            });
-          }
-          cargo.status = getCargoOverallStatus(cargo); 
-          saveMissions();
-          saveShips();
-          renderTable();
-        }
-      } else if (button.classList.contains('load-btn')) {
-        document.getElementById('cargo-zone-tab').click();
-      } else if (button.classList.contains('unload-btn')) {
-        if (confirm(translations[currentLang].confirm_unload)) {
-          ships.forEach(s => {
-            s.platforms.forEach(p => {
-              p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => lc.cargoId !== cargoId) : [];
-              p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
-            });
-          });
-          if (Array.isArray(cargo.containers)) {
-            cargo.containers.forEach(c => {
-                c.status = 'pending';
-                c.location = null;
-            });
-          }
-          cargo.status = getCargoOverallStatus(cargo); 
-          saveMissions();
-          saveShips();
-          renderTable();
-        }
-      } else if (button.classList.contains('deliver-btn')) {
-        ships.forEach(s => {
-          s.platforms.forEach(p => {
-            p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => lc.cargoId !== cargoId) : [];
-            p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
-          });
-        });
-        if (Array.isArray(cargo.containers)) {
-          cargo.containers.forEach(c => {
-              c.status = 'delivered';
-              c.location = null; 
-          });
-        }
-        cargo.status = 'delivered'; 
+    // Actions on a material card within a mission card
+    if (materialCard && missionCard) {
+        const cargoId = parseInt(materialCard.dataset.id, 10);
+        const missionId = parseInt(missionCard.dataset.missionId, 10);
+        const mission = missions.find(m => m.id === missionId);
+        const cargo = mission ? (Array.isArray(mission.cargos) ? mission.cargos.find(c => c.id === cargoId) : null) : null; 
 
-        const missionAllDelivered = Array.isArray(mission.cargos) && mission.cargos.every(c => Array.isArray(c.containers) && c.containers.every(cont => cont.status === 'delivered'));
-        if (missionAllDelivered) {
-            mission.completionDate = new Date().toISOString();
-            missionHistory.push(mission);
-            missions = missions.filter(m => m.id !== mission.id);
-            currentBalance += (mission.payout || 0); 
-            saveCurrentBalance();
-            saveMissionHistory();
+        if (button && button.classList.contains('edit-btn') || editTrigger) {
+            if(cargo && mission) {
+                showEditMaterialForm(cargo, mission.id, mission.name);
+            }
+            return; 
         }
-        saveMissions();
-        saveShips();
-        renderTable();
-      } 
+
+        if(button && cargo) {
+             if (button.classList.contains('delete-btn')) {
+                 if(mission) {
+                    mission.cargos = mission.cargos.filter(c => c.id !== cargoId);
+                    ships.forEach(s => {
+                        s.platforms.forEach(p => {
+                            p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => lc.cargoId !== cargoId) : [];
+                            p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
+                        });
+                    });
+                    saveMissions();
+                    saveShips();
+                    renderTable();
+                 }
+            } else if (button.classList.contains('load-btn')) {
+                document.getElementById('cargo-zone-tab').click();
+            } else if (button.classList.contains('unload-btn')) {
+                if (confirm(translations[currentLang].confirm_unload)) {
+                    ships.forEach(s => {
+                        s.platforms.forEach(p => {
+                            p.loadedContainers = Array.isArray(p.loadedContainers) ? p.loadedContainers.filter(lc => lc.cargoId !== cargoId) : [];
+                            p.occupiedScu = p.loadedContainers.reduce((sum, lc) => sum + lc.size, 0);
+                        });
+                    });
+                    if (Array.isArray(cargo.containers)) {
+                        cargo.containers.forEach(c => {
+                            c.status = 'pending';
+                            c.location = null;
+                        });
+                    }
+                    cargo.status = 'pending'; 
+                    saveMissions();
+                    saveShips();
+                    renderTable();
+                }
+            } else if(button.classList.contains('deliver-btn')) {
+                 if (Array.isArray(cargo.containers)) {
+                    cargo.containers.forEach(c => {
+                        if (c.status === 'loaded') {
+                            c.status = 'delivered';
+                        }
+                    });
+                }
+                cargo.status = getCargoOverallStatus(cargo);
+
+                const missionAllCargosDelivered = mission.cargos.every(c => getCargoOverallStatus(c) === 'delivered');
+                if (missionAllCargosDelivered) {
+                    mission.completionDate = new Date().toISOString();
+                    missionHistory.push(mission);
+                    missions = missions.filter(m => m.id !== mission.id);
+                    currentBalance += (mission.payout || 0);
+                    saveCurrentBalance();
+                    saveMissionHistory();
+                }
+
+                saveMissions();
+                renderTable();
+            }
+        }
     }
   });
 
@@ -2496,6 +2461,8 @@ const dropoffLocationInput = document.getElementById('dropoffLocation');
 const cargoIdInput = document.getElementById('cargoId');
 
 const clearOnFocusIfAdding = (e) => {
+  // This function will clear the input's value on focus,
+  // but only if we are in "add new material" mode (cargoId is empty).
   if (cargoIdInput && !cargoIdInput.value) {
     e.target.value = '';
   }
@@ -2504,30 +2471,3 @@ const clearOnFocusIfAdding = (e) => {
 if(materialInput) materialInput.addEventListener('focus', clearOnFocusIfAdding);
 if(pickupLocationInput) pickupLocationInput.addEventListener('focus', clearOnFocusIfAdding);
 if(dropoffLocationInput) dropoffLocationInput.addEventListener('focus', clearOnFocusIfAdding);
-
-
-document.querySelectorAll('.btn-scu').forEach(button => {
-    button.addEventListener('click', () => {
-        const scu = parseInt(button.dataset.scu);
-        const totalSCUInput = document.getElementById('total-scu');
-        const totalSCU = parseInt(totalSCUInput.value) || 0;
-        const assignedSCUText = document.getElementById('assigned-scu');
-        let assigned = parseInt(assignedSCUText.dataset.value) || 0;
-
-        if (assigned + scu <= totalSCU) {
-            assigned += scu;
-            assignedSCUText.dataset.value = assigned;
-            assignedSCUText.innerText = `${assigned} / ${totalSCU}`;
-
-            const remaining = totalSCU - assigned;
-            const remainingSpan = document.getElementById('scu-remaining');
-            remainingSpan.innerText = `Faltan ${remaining} SCU por asignar.`;
-
-            if (remaining === 0) {
-                remainingSpan.style.color = 'lightgreen';
-            } else {
-                remainingSpan.style.color = 'gold';
-            }
-        }
-    });
-});
