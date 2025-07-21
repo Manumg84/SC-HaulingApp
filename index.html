@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -93,8 +92,8 @@
                 </button>
             </div>
             <div class="header-content">
-                <img src="/SC-HaulingApp/img/communityimage.png" alt="Star Citizen Community Logo" class="header-logo">
-                <h1 class="display-4 fw-bold title-font"><i class="bi bi-rocket-takeoff-fill me-2"></i><span data-key="title">SC CARGO ORGANIZER</span> <span class="display-4 fw-bold title-font" style="font-size: 0.8rem;">v0.285.7</span></h1>
+                <img src="/Star+Citizen+Made+By+Community+1.png" alt="Star Citizen Community Logo" class="header-logo">
+                <h1 class="display-4 fw-bold title-font"><i class="bi bi-rocket-takeoff-fill me-2"></i><span data-key="title">SC CARGO ORGANIZER</span> <span class="display-4 fw-bold title-font" style="font-size: 0.8rem;">v0.283.7</span></h1>
             </div>
         </header>
 
@@ -102,7 +101,7 @@
             <div class="glass-panel mb-4">
                 <div class="panel-header d-flex justify-content-between align-items-center">
                     <h2 class="h5 mb-0 title-font"><i class="bi bi-journal-plus me-2"></i><span data-key="mission_management">GESTIÓN DE MISIONES</span></h2>
-                    <div class="btn-group">
+                    <div class="btn-group dropup">
                         <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                            <i class="bi bi-plus-circle-fill me-2"></i><span data-key="create_new_mission">Crear Nueva Misión</span>
                         </button>
@@ -142,57 +141,61 @@
                                 </div>
                             </div>
 
-                            <!-- ...inicio de tu archivo index.html... -->
-<!-- ...dejo el resto tal cual y solo cambio la parte del breakdown de contenedores... -->
+                            <div id="container-breakdown-section" class="d-none">
+                                <hr class="my-3" style="border-color: var(--panel-border);">
 
-<!-- ...BUSCA esta parte en tu archivo: -->
-<div id="container-breakdown-section" class="d-none">
-  <hr class="my-3" style="border-color: var(--panel-border);">
-  <div class="row g-2 align-items-center">
-    <div class="col-12">
-      <label class="form-label" data-key="container_breakdown_label">
-        Cantidad de Contenedores por tamaño (SCU)
-      </label>
-      <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="1">+ 1 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_1_count" data-scu="1">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="2">+ 2 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_2_count" data-scu="2">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="4">+ 4 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_4_count" data-scu="4">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="8">+ 8 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_8_count" data-scu="8">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="16">+ 16 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_16_count" data-scu="16">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="24">+ 24 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_24_count" data-scu="24">0</span>
-    </div>
-    <div class="col-auto">
-      <button type="button" class="btn btn-primary scu-increment-btn" data-scu="32">+ 32 SCU</button>
-      <span class="scu-count fw-bold ms-2 me-4" id="scu_32_count" data-scu="32">0</span>
-    </div>
-    <div class="col-12 mt-3 text-end">
-      <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm">
-        <i class="bi bi-x-circle me-1"></i>Resetear Contenedores
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ...el resto de tu formulario y modal sigue igual... -->
-
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <label class="form-label" data-key="container_breakdown_label">Cantidad de Contenedores por tamaño (SCU)</label>
+                                        <p id="container-validation-message" class="small text-muted-glow mb-2"></p>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_1_count" data-scu="1">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="1">1 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_2_count" data-scu="2">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="2">2 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_4_count" data-scu="4">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="4">4 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_8_count" data-scu="8">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="8">8 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_16_count" data-scu="16">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="16">16 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_24_count" data-scu="24">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="24">24 SCU</button>
+                                        </div>
+                                    </div>
+                                     <div class="col-auto">
+                                        <div class="scu-control-item-v2">
+                                            <span class="scu-count-badge" id="scu_32_count" data-scu="32">0</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary scu-add-btn" data-scu="32">32 SCU</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mt-3 text-end">
+                                        <button type="button" id="reset-scu-inputs" class="btn btn-secondary btn-sm"><i class="bi bi-x-circle me-1"></i>Resetear Contenedores</button>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div class="panel-footer d-flex justify-content-end p-2">
@@ -201,11 +204,7 @@
                     </div>
                 </div>
             </div>
-          <br>
-          <br>
-          <br>
-          <br>
-
+        
             <div class="glass-panel">
                 <div class="panel-header d-flex justify-content-between align-items-center">
                     <h2 class="h5 mb-0 title-font"><i class="bi bi-box-seam me-2"></i><span data-key="cargo_summary">RESUMEN DE CARGA</span></h2>
@@ -243,7 +242,7 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="route_and_nav_tab" data-bs-toggle="tab" data-bs-target="#new-tab-pane" type="button" role="tab" aria-controls="new-tab-pane" aria-selected="false">
+                        <button class="nav-link" id="route_and_nav_tab" data-bs-toggle="tab" data-bs-target="#route-and-nav-pane" type="button" role="tab" aria-controls="route-and-nav-pane" aria-selected="false">
                             <i class="bi bi-diagram-3-fill me-2"></i><span data-key="transport_routes">Rutas de Transporte</span>
                         </button>
                     </li>
@@ -261,28 +260,9 @@
 
                 <div class="tab-content" id="summary-tab-content">
                     <div class="tab-pane fade show active" id="mission-view-pane" role="tabpanel" aria-labelledby="mission-tab">
-                        <div class="panel-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-borderless mission-table mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" style="width: 20%;" data-key="material">Material</th>
-                                            <th scope="col" class="location-header" data-key="pickup">Recogida</th>
-                                            <th scope="col" class="location-header" data-key="dropoff">Entrega</th>
-                                            <th scope="col" class="text-center">SCU</th>
-                                            <th scope="col" data-key="containers">Contenedores</th>
-                                            <th scope="col" class="text-center" data-key="status">Estado</th>
-                                            <th scope="col" class="text-center" data-key="actions">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="mission-table-body">
-                                        <!-- Las misiones se agregarán aquí dinámicamente -->
-                                        <tr id="no-missions-row">
-                                            <td colspan="7" class="text-center p-4 text-muted-glow" data-key="no_active_misions">No hay misiones activas. Haz clic en "Crear Nueva Misión" para comenzar.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="panel-body p-3" id="mission-cards-container">
+                             <!-- Las tarjetas de misión se agregarán aquí dinámicamente -->
+                            <p id="no-missions-message-mission-view" class="text-center p-4 text-muted-glow" data-key="no_active_misions" style="display: none;">No hay misiones activas. Haz clic en "Crear Nueva Misión" para comenzar.</p>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pickup-location-view-pane" role="tabpanel" aria-labelledby="pickup-location-tab">
@@ -352,14 +332,14 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center gap-2 flex-wrap mt-3 mb-4" id="manufacturer-logos-container">
-                                 <img src="/SC-HaulingApp/img/anvil.webp" alt="Anvil" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/anvilships.webp">
-                                 <img src="/SC-HaulingApp/img/aegis.webp" alt="Aegis" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/aegisships.webp">
-                                 <img src="/SC-HaulingApp/img/crusader.webp" alt="Crusader" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/crusaderships.webp">
-                                 <img src="/SC-HaulingApp/img/drake.webp" alt="Drake" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/drakeships.webp">
-                                 <img src="/SC-HaulingApp/img/misc.webp" alt="Misc" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/miscships.webp">
-                                 <img src="/SC-HaulingApp/img/origin.webp" alt="Origin" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/originships.webp">
-                                 <img src="/SC-HaulingApp/img/rsi.webp" alt="Rsi" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/rsiships.webp">
-                                 <img src="/SC-HaulingApp/img/others.webp" alt="Others" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="img/othersships.webp">
+                                <img src="/Anvil.webp" alt="Anvil Aerospace" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/AnvilShips.webp">
+                                <img src="/aegis.webp" alt="Aegis Dynamics" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/AegisShips.webp">
+                                <img src="/Crusader.webp" alt="Crusader Industries" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/CrusaderShips.webp">
+                                <img src="/Drake.webp" alt="Drake Interplanetary" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/DrakeShips.webp">
+                                <img src="/misc.webp" alt="MISC" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/MISCShips.webp">
+                                <img src="/Origin.webp" alt="Origin Jumpworks" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/OriginShips.webp">
+                                <img src="/rsi.webp" alt="Roberts Space Industries" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/RSIShips.webp">
+                                <img src="/others.webp" alt="Others" class="manufacturer-logo" data-bs-toggle="modal" data-bs-target="#imageModal" data-diagram-src="/OtherShips.webp">
                             </div>
                             <div id="ship-container">
                                 <!-- Las naves se agregarán aquí -->
@@ -367,7 +347,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="new-tab-pane" role="tabpanel" aria-labelledby="route_and_nav_tab">
+                    <div class="tab-pane fade" id="route-and-nav-pane" role="tabpanel" aria-labelledby="route_and_nav_tab">
                         <div class="panel-body">
                            <h3 data-key="transport_routes">Rutas de Transporte</h3>
                            <p>Próximamente...</p>
@@ -816,7 +796,7 @@
     <script type="module" src="script.js"></script>
 
 <footer class="custom-footer">
-  <img src="/SC-HaulingApp/img/footer.png" alt="Footer gráfico" class="footer-image" style="width: 100%; height: auto; display: block; max-width: 1292px; margin: 0 auto;">
+  <img src="/Footer.png" alt="Footer gráfico" class="footer-image" style="width: 100%; height: auto; display: block; max-width: 1292px; margin: 0 auto;">
 </footer>
   
 </body>
